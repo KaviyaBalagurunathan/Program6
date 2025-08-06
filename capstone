@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FoodBay - Chicken Delivery</title>
+  <style>
+    body { font-family: sans-serif; background: #fff0e6; text-align: center; margin: 0; padding: 0; }
+    .page { display: none; padding: 20px; }
+    .active { display: block; }
+    h1, h2 { color: #e63946; }
+    .logo { width: 100px; margin: 10px auto; }
+    .button { background: #e76f51; color: #fff; padding: 10px 20px; border: none; margin: 10px; cursor: pointer; border-radius: 8px; }
+    .dish { margin: 10px; display: inline-block; width: 150px; }
+    .dish img { width: 100%; border-radius: 8px; }
+    input, textarea { padding: 8px; width: 80%; margin: 10px; border-radius: 5px; border: 1px solid #ccc; }
+    #scratchResult { font-size: 18px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<!-- Home -->
+<div id="home" class="page active">
+  <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.freepik.com%2Fpremium-vector%2Ffork-spoon-logo-design-concept_296161536.htm&psig=AOvVaw3_ec_e8Tmr5Lr948eCl8zU&ust=1754495522582000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCIiz3KyD9I4DFQAAAAAdAAAAABAL.png" class="logo" alt="FoodBay Logo">
+  <h1>Welcome to FoodBay</h1>
+  <p>Delicious chicken delivered fresh 🍗</p>
+  <button class="button" onclick="showPage('menu')">View Menu</button>
+</div>
+
+<!-- Menu -->
+<div id="menu" class="page">
+  <h2>Our Chicken Dishes</h2>
+  <div id="menuList"></div>
+  <button class="button" onclick="showPage('cart')">Go to Cart</button>
+</div>
+
+<!-- Cart -->
+<div id="cart" class="page">
+  <h2>Your Cart</h2>
+  <div id="cartList"></div>
+  <button class="button" onclick="placeOrder()">Place Order</button>
+</div>
+
+<!-- Order Confirmed -->
+<div id="order" class="page">
+  <h2>Order Confirmed ✅</h2>
+  <img src="https://cdn-icons-png.flaticon.com/512/845/845646.png" width="100" />
+  <p>Thank you for ordering with FoodBay!</p>
+  <button class="button" onclick="showPage('offer')">Scratch Card Offer</button>
+</div>
+
+
+
+
+
+<!-- Contact -->
+<div id="contact" class="page">
+  <h2>📞 Contact & Enquiry</h2>
+  <input type="text" placeholder="Your Name"><br>
+  <input type="email" placeholder="Your Email"><br>
+  <textarea placeholder="Your Message"></textarea><br>
+  <button class="button" onclick="alert('Message Sent!')">Send Message</button>
+  <button class="button" onclick="showPage('home')">Back to Home</button>
+</div>
+
+<script>
+  const dishes = [
+    { name: "Grilled Chicken", price: 180, img: "https://thumbs.dreamstime.com/b/png-grilled-chicken-against-transparent-background-png-grilled-chicken-against-transparent-background-381686257.jpg.jpg" },
+    { name: "Chicken Biryani", price: 200, img: "https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTEwL3Jhd3BpeGVsb2ZmaWNlNF90b3Bfdmlld19vZl9hX3Bha2lzdGFuX2NoaWNrZW5fYmlyeWFuaV9mb29kX2Rpc19kMjQzYjY1Zi1iN2U4LTQwMmItOGY5Yi1mMzQ3YTliYTE0ZTYucG5n.jpg.jpg" },
+    { name: "Spicy Wings", price: 150, img: "https://img.freepik.com/premium-psd/chicken-wings-png-spicy-food_1022554-23.jpg.jpg" },
+    { name: "Chicken Lollipop", price: 170, img: "https://media.istockphoto.com/id/1297553194/photo/chicken-lollipop-spicy-mala-sichuan-pepper-flavor-suace-chinese-style.jpg?s=612x612&w=0&k=20&c=g_e0eUC5tlkyD54VkZFuG47IM1mJQL1NQkMEmFgwldk.jpg" },
+    { name: "Tandoori Chicken", price: 190, img: "https://img.freepik.com/premium-photo/tandoori-chicken-is-indian-non-vegetarian-spicy-food_1093310-364.jpg?semt=ais_hybrid&w=740&q=80.jpg" },
+    { name: "Butter Chicken", price: 210, img: "https://png.pngtree.com/png-vector/20240310/ourmid/pngtree-butter-chicken-halal-food-menu-png-image_11926300.png.jpg" },
+    { name: "Crispy Chicken", price: 160, img: "https://similarpng.com/_next/image?url=https%3A%2F%2Fimage.similarpng.com%2Ffile%2Fsimilarpng%2Fvery-thumbnail%2F2022%2F06%2FFried-spicy-chicken-wings-on-transparent-background-PNG.png&w=3840&q=75.jpg" },
+    { name: "Chicken Curry", price: 180, img: "https://png.pngtree.com/png-clipart/20230529/original/pngtree-spicy-chicken-curry-png-image_9173013.png.jpg" },
+    { name: "BBQ Chicken", price: 220, img: "https://static.vecteezy.com/system/resources/thumbnails/053/964/570/small_2x/grilled-bbq-chicken-legs-delicious-food-plate.png.jpg" },
+    { name: "Popcorn Chicken", price: 140, img: "https://mychickenexpress.in/wp-content/uploads/2024/02/mc_0006_03-450x450.png.jpg" },
+  ];
+  const cart = [];
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (id === 'menu') loadMenu();
+    if (id === 'cart') loadCart();
+  }
+
+  function loadMenu() {
+    const list = document.getElementById("menuList");
+    list.innerHTML = '';
+    dishes.forEach((dish, i) => {
+      list.innerHTML += `
+        <div class="dish">
+          <img src="${dish.img}" />
+          <p><b>${dish.name}</b><br>₹${dish.price}</p>
+          <button class="button" onclick="addToCart(${i})">Add to Cart</button>
+        </div>`;
+    });
+  }
+
+  function addToCart(index) {
+    cart.push(dishes[index]);
+    alert(dishes[index].name + " added to cart!");
+  }
+
+  function loadCart() {
+    const list = document.getElementById("cartList");
+    list.innerHTML = '';
+    if (cart.length === 0) {
+      list.innerHTML = "<p>Your cart is empty.</p>";
+    } else {
+      cart.forEach(item => {
+        list.innerHTML += `<p>${item.name} - ₹${item.price}</p>`;
+      });
+    }
+  }
+
+  function placeOrder() {
+    if (cart.length === 0) {
+      alert("Cart is empty!");
+    } else {
+      showPage('order');
+    }
+  }
+<title>Scratch Card - FoodBay</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin: 40px;
+    }
+    .card {
+      background-color: gold;
+      width: 200px; height: 100px;
+      text-align: center;
+      line-height: 100px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 2px dashed #444;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎁 Lucky Chicken Scratch Card</h1>
+  <div class="card" onclick="reveal()">Scratch Here</div>
+  <p id="result"></p>
+  function scratch() {
+    const win = Math.random() < 0.5;
+    document.getElementById("scratchResult").innerText = win
+      ? "🎉 You won 10% off on your next order!"
+      : "😢 Sorry, no offer this time!";
+  }
+</script>
+</body>
+</html>
